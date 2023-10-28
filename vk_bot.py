@@ -21,13 +21,14 @@ def main():
     longpoll = VkLongPoll(vk_session)
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            answer = detect_intent_texts(
+            is_fallback, answer = detect_intent_texts(
                 project_id=project_id,
                 session_id=event.user_id,
                 text=event.text,
                 language_code=language_code
             )
-            send_dialog_flow_answer(event, vk_api, answer)
+            if not is_fallback:
+                send_dialog_flow_answer(event, vk_api, answer)
 
 
 if __name__ == '__main__':

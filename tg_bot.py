@@ -22,7 +22,7 @@ def start(update: Update, context: CallbackContext):
 
 
 def send_dialog_flow_answer(update: Update, context: CallbackContext):
-    text = detect_intent_texts(
+    is_fallback, text = detect_intent_texts(
         project_id=project_id,
         session_id=update.effective_chat.id,
         text=update.message.text,
