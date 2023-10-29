@@ -1,17 +1,27 @@
 import logging
-from telegram import Update
+from telegram import Bot, Update
 from telegram.ext import (Updater, CommandHandler, CallbackContext,
                           MessageHandler, Filters)
 
 from config import tg_bot_token, project_id, language_code
+from config import logging_tg_bot_token, tg_user_id
 from dialog_flow import detect_intent_texts
 
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('tg_bot')
+
+
+class TelegramLogsHandler(logging.Handler):
+
+    def __init__(self, tg_bot, chat_id):
+        super().__init__()
+        self.chat_id = chat_id
+        self.tg_bot = tg_bot
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        log_entry = log_entry[:4096]
+        self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
 def start(update: Update, context: CallbackContext):
@@ -22,31 +32,41 @@ def start(update: Update, context: CallbackContext):
 
 
 def send_dialog_flow_answer(update: Update, context: CallbackContext):
-    is_fallback, text = detect_intent_texts(
-        project_id=project_id,
-        session_id=update.effective_chat.id,
-        text=update.message.text,
-        language_code=language_code
-    )
-
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text
-    )
+    try:
+        is_fallback, text = detect_intent_texts(
+            project_id=project_id,
+            session_id=update.effective_chat.id,
+            text=update.message.text,
+            language_code=language_code
+        )
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text
+        )
+    except Exception as error:
+        logger.exception(error)
 
 
 def main():
     updater = Updater(token=tg_bot_token)
     dispatcher = updater.dispatcher
+    logger_bot = Bot(token=logging_tg_bot_token)
+
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+    logger.addHandler(TelegramLogsHandler(logger_bot, tg_user_id))
 
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
-    echo_handler = MessageHandler(
+    dialog_flow_handler = MessageHandler(
         Filters.text & (~Filters.command),
         send_dialog_flow_answer
     )
-    dispatcher.add_handler(echo_handler)
+    dispatcher.add_handler(dialog_flow_handler)
 
+    logger.info('Бот запущен!')
     updater.start_polling()
 
 
