@@ -1,10 +1,13 @@
 import random
 import logging
+from telegram import Bot
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-from config import vk_api_key, project_id, language_code
+from config import (vk_api_key, project_id, language_code,
+                    tg_user_id, logging_tg_bot_token)
 from dialog_flow import detect_intent_texts
+from tg_bot import TelegramLogsHandler
 
 
 logger = logging.getLogger('vk_bot')
@@ -19,10 +22,15 @@ def send_dialog_flow_answer(event, vk_api, answer):
 
 
 def main():
+    logger_bot = Bot(token=logging_tg_bot_token)
+
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
+    logger.addHandler(TelegramLogsHandler(logger_bot, tg_user_id))
+    logger.info('Бот запущен!')
+
     try:
         vk_session = vk.VkApi(token=vk_api_key)
         vk_api = vk_session.get_api()
