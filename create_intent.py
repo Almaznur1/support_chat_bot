@@ -1,7 +1,8 @@
 from google.cloud import dialogflow
 import json
+import argparse
 
-from config import project_id
+from dotenv import load_dotenv
 
 
 def create_intent(project_id, display_name,
@@ -35,7 +36,15 @@ def create_intent(project_id, display_name,
 
 
 def main():
-    with open('questions.json', 'r', encoding='utf-8') as file:
+    parser = argparse.ArgumentParser(description='DialogFlow training script')
+    parser.add_argument('--path',
+                        default='questions.json',
+                        help='questions file path')
+
+    args = parser.parse_args()
+    file_path = args.path
+
+    with open(file_path, 'r', encoding='utf-8') as file:
         questions_json = file.read()
 
     questions = json.loads(questions_json)
@@ -43,7 +52,7 @@ def main():
     for question in questions:
 
         create_intent(
-            project_id=project_id,
+            project_id=config.project_id,
             display_name=question,
             training_phrases_parts=questions[question]['questions'],
             message_texts=questions[question]['answer']
@@ -51,4 +60,6 @@ def main():
 
 
 if __name__ == '__main__':
+    load_dotenv()
+    import config
     main()

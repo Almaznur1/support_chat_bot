@@ -1,7 +1,7 @@
 from google.cloud import api_keys_v2
 from google.cloud.api_keys_v2 import Key
 
-from config import project_id
+from dotenv import load_dotenv
 
 
 def create_api_key(project_id: str, suffix: str) -> Key:
@@ -41,8 +41,10 @@ def create_api_key(project_id: str, suffix: str) -> Key:
 
 def main():
     suffix = 'devman'
-    create_api_key(project_id, suffix)
+    create_api_key(config.project_id, suffix)
 
 
 if __name__ == '__main__':
+    load_dotenv()
+    import config
     main()
