@@ -40,8 +40,7 @@ def create_api_key(project_id: str, suffix: str) -> Key:
 
 
 def main():
-    suffix = 'devman'
-    create_api_key(config.project_id, suffix)
+    create_api_key(config.project_id, config.suffix)
 
 
 if __name__ == '__main__':
