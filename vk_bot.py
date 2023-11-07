@@ -34,15 +34,16 @@ def main():
         vk_api = vk_session.get_api()
         longpoll = VkLongPoll(vk_session)
         for event in longpoll.listen():
-            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                is_fallback, answer = detect_intent_texts(
-                    project_id=config.project_id,
-                    session_id=event.user_id,
-                    text=event.text,
-                    language_code=config.language_code
-                )
-                if not is_fallback:
-                    send_dialog_flow_answer(event, vk_api, answer)
+            if event.type != VkEventType.MESSAGE_NEW or not event.to_me:
+                continue
+            is_fallback, answer = detect_intent_texts(
+                project_id=config.project_id,
+                session_id=event.user_id,
+                text=event.text,
+                language_code=config.language_code
+            )
+            if not is_fallback:
+                send_dialog_flow_answer(event, vk_api, answer)
     except Exception as error:
         logger.exception(error)
 
