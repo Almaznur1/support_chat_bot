@@ -5,7 +5,7 @@ from telegram import Bot
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from dialog_flow import detect_intent_texts
-from tg_bot import TelegramLogsHandler
+from tg_logger import TelegramLogsHandler
 
 
 logger = logging.getLogger('vk_bot')
