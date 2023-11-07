@@ -49,13 +49,13 @@ def main():
 
     questions = json.loads(questions_json)
 
-    for question in questions:
+    for key, value in questions.items():
 
         create_intent(
             project_id=config.project_id,
-            display_name=question,
-            training_phrases_parts=questions[question]['questions'],
-            message_texts=questions[question]['answer']
+            display_name=key,
+            training_phrases_parts=value['questions'],
+            message_texts=value['answer']
         )
 
 
