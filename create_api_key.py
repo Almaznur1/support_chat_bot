@@ -2,6 +2,7 @@ from google.cloud import api_keys_v2
 from google.cloud.api_keys_v2 import Key
 
 from dotenv import load_dotenv
+from os import getenv
 
 
 def create_api_key(project_id: str, suffix: str) -> Key:
@@ -39,11 +40,9 @@ def create_api_key(project_id: str, suffix: str) -> Key:
     return response
 
 
-def main():
-    create_api_key(config.project_id, config.suffix)
-
-
 if __name__ == '__main__':
     load_dotenv()
-    import config
-    main()
+    project_id = getenv('PROJECT_ID')
+    suffix = getenv('DIALOG_FLOW_API_KEY_SUFFIX', default='devman')
+
+    create_api_key(project_id, suffix)

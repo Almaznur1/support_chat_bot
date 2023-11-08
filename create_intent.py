@@ -3,6 +3,7 @@ import json
 import argparse
 
 from dotenv import load_dotenv
+from os import getenv
 
 
 def create_intent(project_id, display_name,
@@ -35,7 +36,10 @@ def create_intent(project_id, display_name,
     print(f"Intent created: {response}")
 
 
-def main():
+if __name__ == '__main__':
+    load_dotenv()
+    project_id = getenv('PROJECT_ID')
+
     parser = argparse.ArgumentParser(description='DialogFlow training script')
     parser.add_argument('--path',
                         default='questions.json',
@@ -49,17 +53,11 @@ def main():
 
     questions = json.loads(questions_json)
 
-    for key, value in questions.items():
+    for intent, contents in questions.items():
 
         create_intent(
-            project_id=config.project_id,
-            display_name=key,
-            training_phrases_parts=value['questions'],
-            message_texts=value['answer']
+            project_id=project_id,
+            display_name=intent,
+            training_phrases_parts=contents['questions'],
+            message_texts=contents['answer']
         )
-
-
-if __name__ == '__main__':
-    load_dotenv()
-    import config
-    main()

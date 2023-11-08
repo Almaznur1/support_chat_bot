@@ -1,5 +1,6 @@
 import logging
 from dotenv import load_dotenv
+from os import getenv
 from telegram import Bot, Update
 from telegram.ext import (Updater, CommandHandler, CallbackContext,
                           MessageHandler, Filters)
@@ -21,10 +22,10 @@ def start(update: Update, context: CallbackContext):
 def send_dialog_flow_answer(update: Update, context: CallbackContext):
     try:
         is_fallback, text = detect_intent_texts(
-            project_id=config.project_id,
+            project_id=project_id,
             session_id=update.effective_chat.id,
             text=update.message.text,
-            language_code=config.language_code
+            language_code=language_code
         )
         context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -34,18 +35,23 @@ def send_dialog_flow_answer(update: Update, context: CallbackContext):
         logger.exception(error)
 
 
-def main():
+if __name__ == '__main__':
     load_dotenv()
+    tg_bot_token = getenv('TG_BOT_TOKEN')
+    logging_tg_bot_token = getenv('LOGGING_TG_BOT_TOKEN')
+    tg_user_id = getenv('TG_USER_ID')
+    project_id = getenv('PROJECT_ID')
+    language_code = getenv('LANGUAGE_CODE')
 
-    updater = Updater(token=config.tg_bot_token)
+    updater = Updater(token=tg_bot_token)
     dispatcher = updater.dispatcher
-    logger_bot = Bot(token=config.logging_tg_bot_token)
+    logger_bot = Bot(token=logging_tg_bot_token)
 
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
-    logger.addHandler(TelegramLogsHandler(logger_bot, config.tg_user_id))
+    logger.addHandler(TelegramLogsHandler(logger_bot, tg_user_id))
 
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
@@ -57,9 +63,3 @@ def main():
 
     logger.info('Бот запущен!')
     updater.start_polling()
-
-
-if __name__ == '__main__':
-    load_dotenv()
-    import config
-    main()
