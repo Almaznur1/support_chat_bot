@@ -19,7 +19,8 @@ def start(update: Update, context: CallbackContext):
     )
 
 
-def send_dialog_flow_answer(update: Update, context: CallbackContext):
+def send_dialog_flow_answer(update: Update, context: CallbackContext,
+                            project_id, language_code):
     try:
         is_fallback, text = detect_intent_texts(
             project_id=project_id,
@@ -55,9 +56,12 @@ if __name__ == '__main__':
 
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
+
     dialog_flow_handler = MessageHandler(
         Filters.text & (~Filters.command),
-        send_dialog_flow_answer
+        lambda update, context: send_dialog_flow_answer(
+            update, context, project_id, language_code
+        )
     )
     dispatcher.add_handler(dialog_flow_handler)
 
