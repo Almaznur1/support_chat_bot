@@ -36,7 +36,7 @@ def create_intent(project_id, display_name,
     print(f"Intent created: {response}")
 
 
-if __name__ == '__main__':
+def main():
     load_dotenv()
     project_id = getenv('PROJECT_ID')
 
@@ -61,3 +61,7 @@ if __name__ == '__main__':
             training_phrases_parts=contents['questions'],
             message_texts=contents['answer']
         )
+
+
+if __name__ == '__main__':
+    main()

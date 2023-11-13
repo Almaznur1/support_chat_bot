@@ -40,9 +40,13 @@ def create_api_key(project_id: str, suffix: str) -> Key:
     return response
 
 
-if __name__ == '__main__':
+def main():
     load_dotenv()
     project_id = getenv('PROJECT_ID')
     suffix = getenv('DIALOG_FLOW_API_KEY_SUFFIX', default='devman')
 
     create_api_key(project_id, suffix)
+
+
+if __name__ == '__main__':
+    main()

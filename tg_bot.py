@@ -36,7 +36,7 @@ def send_dialog_flow_answer(update: Update, context: CallbackContext,
         logger.exception(error)
 
 
-if __name__ == '__main__':
+def main():
     load_dotenv()
     tg_bot_token = getenv('TG_BOT_TOKEN')
     logging_tg_bot_token = getenv('LOGGING_TG_BOT_TOKEN')
@@ -67,3 +67,7 @@ if __name__ == '__main__':
 
     logger.info('Бот запущен!')
     updater.start_polling()
+
+
+if __name__ == '__main__':
+    main()

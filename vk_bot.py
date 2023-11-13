@@ -20,7 +20,7 @@ def send_dialog_flow_answer(event, vk_api, answer):
     )
 
 
-if __name__ == '__main__':
+def main():
     load_dotenv()
     logging_tg_bot_token = getenv('LOGGING_TG_BOT_TOKEN')
     tg_user_id = getenv('TG_USER_ID')
@@ -54,3 +54,7 @@ if __name__ == '__main__':
                 send_dialog_flow_answer(event, vk_api, answer)
     except Exception as error:
         logger.exception(error)
+
+
+if __name__ == '__main__':
+    main()
